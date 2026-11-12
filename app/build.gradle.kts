@@ -1,18 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias (libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.example.pertemuan9"
+    namespace = "com.example.mobileapp"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.pertemuan9"
+        applicationId = "com.example.mobileapp"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
