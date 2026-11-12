@@ -58,5 +58,7 @@ dependencies {
     //room
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)
+    //viewmodel
+    implementation(libs.lifecycle.viewmodel.compose)
 
 }
