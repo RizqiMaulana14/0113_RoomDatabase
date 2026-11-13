@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mobileapp"
+    namespace = "com.example.pertemuan9"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.mobileapp"
+        applicationId = "com.example.pertemuan9"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
