@@ -1,5 +1,6 @@
 package com.example.pertemuan9.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,27 +31,26 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pertemuan9.R
 import com.example.pertemuan9.room.Siswa
-import com.example.pertemuan9.uicontroller.DestinasiNavigasi
-import com.example.pertemuan9.uicontroller.SiswaTopAppBar
+import com.example.pertemuan9.view.route.DestinasiHome
+import com.example.pertemuan9.view.uicontroller.SiswaTopAppBar
 import com.example.pertemuan9.viewmodel.HomeViewModel
-import com.example.pertemuan9.viewmodel.PenyediaViewModel
-
-object DestinasiHome : DestinasiNavigasi {
-    override val route = "home"
-    override val titleRes = R.string.app_name
-}
+import com.example.pertemuan9.viewmodel.provider.PenyediaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
+    // edit 1 : tambahkan parameter navigateToItemUpdate
+    navigateToItemUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -73,9 +73,11 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        val homeUiState by viewModel.homeUiState.collectAsState()
-        HomeBody(
-            listSiswa = homeUiState.listSiswa,
+        val uiStateSiswa by viewModel.homeUiState.collectAsState()
+        BodyHome(
+            itemSiswa = uiStateSiswa.listSiswa,
+            // edit 2 : tambahkan event onSiswaClick
+            onSiswaClick = navigateToItemUpdate,
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -84,15 +86,17 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeBody(
-    listSiswa: List<Siswa>,
+fun BodyHome(
+    itemSiswa: List<Siswa>,
+    // edit 3 : tambahkan parameter onSiswaClick
+    onSiswaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        if (listSiswa.isEmpty()) {
+        if (itemSiswa.isEmpty()) {
             Text(
                 text = stringResource(R.string.deskripsi_no_item),
                 textAlign = TextAlign.Center,
@@ -100,7 +104,9 @@ fun HomeBody(
             )
         } else {
             ListSiswa(
-                listSiswa = listSiswa,
+                itemSiswa = itemSiswa,
+                // edit 4 : tambahkan event onSiswaClick
+                onSiswaClick = { onSiswaClick(it.id) },
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
         }
@@ -109,17 +115,19 @@ fun HomeBody(
 
 @Composable
 fun ListSiswa(
-    listSiswa: List<Siswa>,
+    itemSiswa: List<Siswa>,
+    // edit 5 : tambahkan parameter onSiswaClick
+    onSiswaClick: (Siswa) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(items = listSiswa, key = { it.id }) { person ->
+    LazyColumn(modifier = modifier) {
+        items(items = itemSiswa, key = { it.id }) { person ->
             DataSiswa(
                 siswa = person,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
+                    // edit 6 : tambahkan modifier clickable
+                    .clickable { onSiswaClick(person) }
             )
         }
     }
@@ -132,7 +140,7 @@ fun DataSiswa(
 ) {
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(id = R.dimen.padding_card_elevation))
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
